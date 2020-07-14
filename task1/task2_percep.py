@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-X = np.array([[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]])
-Y = np.array([[0], [0], [0], [1]])
-W = np.random.rand(3)
+X = np.array([[i] for i in range(10)], dtype=int)
+Y = np.square(X, dtype=int)
+arr_bias = np.ones((10, 1), dtype=int)
+X = np.append(X, arr_bias, axis=1)
+W = np.random.rand(2)
 
 
 class Perceptron:
@@ -21,26 +23,29 @@ class Perceptron:
 
     def learn_binary(self, x_vector, y_vector, weights):
         for i in range(self.number_of_iterations):
-            random_index = np.random.randint(4)
+            random_index = np.random.randint(10)
             x_element = x_vector[random_index]
             y_element = y_vector[random_index]
             scalar = np.dot(weights, x_element)
-            error_term = y_element - self.sign(scalar)
+            error_term = (y_element - scalar)
             for j in range(len(weights)):
                 weights[j] += self.learning_rate * error_term * x_element[j]
         print(weights)
         return weights
 
-    def test_binary(self, x_vector, new_weights):
+    @staticmethod
+    def test_binary(x_vector, new_weights):
+        result_list = []
         for x in x_vector:
             result = np.dot(x, new_weights)
-            print(f"{x[:2]}: {result} -> {self.sign(result)}")
+            result_list.append(result)
+            print(f"{x[:2]}: {result}")
+        return result_list
 
-    def learn_square(self, x_vector, weights):
-        pass
 
-
-x_and = Perceptron(None, 1e-1, 200)
+x_and = Perceptron(None, 0.01, 10000)
 w_predict = x_and.learn_binary(X, Y, W)
-x_and.test_binary(X, w_predict)
-
+true_list = x_and.test_binary(X, w_predict)
+plt.plot(true_list, marker='o', color='blue')
+plt.plot(Y, marker='x', color='pink')
+plt.show()
